@@ -16,17 +16,21 @@ def main():
     # pull in data and model from other files
     net, criterion, optimizer = get_model()
     trainloader, testloader = get_data(4)
-        
-    net = train(net, criterion, optimizer, trainloader)
-    evaluate(testloader, net)
+    device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-def train(net, criterion, optimizer, trainloader):
+    net = train(net, criterion, optimizer, trainloader, device)
+    evaluate(testloader, net, device)
+
+def train(net, criterion, optimizer, trainloader, device):
+    # use CUDA, if available
+    net.to(device)
+
     for epoch in range(2):  # loop over the dataset multiple times
 
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             # get the inputs; data is a list of [inputs, labels]
-            inputs, labels = data
+            inputs, labels = data[0].to(device), data[1].to(device)
 
             # zero the parameter gradients
             optimizer.zero_grad()
@@ -46,13 +50,14 @@ def train(net, criterion, optimizer, trainloader):
     print('Finished Training')
     return net
 
-def evaluate(testloader, net):
+def evaluate(testloader, net, device):
     correct = 0
     total = 0
+    
     # since we're not training, we don't need to calculate the gradients for our outputs
     with torch.no_grad():
         for data in testloader:
-            images, labels = data
+            images, labels = data[0].to(device), data[1].to(device)
             # calculate outputs by running images through the network
             outputs = net(images)
             # the class with the highest energy is what we choose as prediction
