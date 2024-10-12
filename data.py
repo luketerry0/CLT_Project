@@ -28,4 +28,4 @@ def get_data(batch_size):
     testset = torchvision.datasets.GTSRB(root="./data", split="test", download=True, transform=transform)
     testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True, num_workers=2)
 
-    return trainset, trainloader
+    return trainloader, testloader
