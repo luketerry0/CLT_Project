@@ -15,17 +15,17 @@ Classifier training and verification
 def main():
     # pull in data and model from other files
     net, criterion, optimizer = get_model()
-    trainloader, testloader = get_data(4)
+    trainloader, testloader = get_data(batch_size=50)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    net = train(net, criterion, optimizer, trainloader, device)
+    net = train(net, criterion, optimizer, trainloader, device, num_epochs=3)
     evaluate(testloader, net, device)
 
-def train(net, criterion, optimizer, trainloader, device):
+def train(net, criterion, optimizer, trainloader, device, num_epochs):
     # use CUDA, if available
     net.to(device)
 
-    for epoch in range(2):  # loop over the dataset multiple times
+    for epoch in range(num_epochs):  # loop over the dataset multiple times
 
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
@@ -43,8 +43,8 @@ def train(net, criterion, optimizer, trainloader, device):
 
             # print statistics
             running_loss += loss.item()
-            if i % 2000 == 1999:    # print every 2000 mini-batches
-                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+            if i % 100 == 0:    # print every 100 batches
+                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 50:.3f}')
                 running_loss = 0.0
 
     print('Finished Training')
@@ -65,7 +65,7 @@ def evaluate(testloader, net, device):
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-    print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
+    print(f'Accuracy of the network on the test images: {100 * correct // total} %')
 
 if __name__=="__main__":
     main()

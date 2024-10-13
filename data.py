@@ -11,8 +11,8 @@ Define the data, and any transformations which happen to it in this file
 
 def get_data(batch_size):
     # load in the data
-    transform = transforms.Compose(
-        # transforms lovingly stolen from https://github.com/poojahira/gtsrb-pytorch/blob/master/data.py
+    train_transform = transforms.Compose(
+        # transform lovingly stolen from https://github.com/poojahira/gtsrb-pytorch/blob/master/data.py
         [
             transforms.Resize((32, 32)),
             transforms.ToTensor(),
@@ -20,12 +20,22 @@ def get_data(batch_size):
         ]
     )
 
+    test_transform = transforms.Compose( [
+            transforms.Resize((32, 32)),
+            transforms.ToTensor(),
+    ])
+
     BATCH_SIZE = 4
 
-    trainset = torchvision.datasets.GTSRB(root="./data", split="train", download=True, transform=transform)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
+    trainset = torchvision.datasets.GTSRB(root="./data", split="train", download=True, transform=train_transform)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=4)
 
-    testset = torchvision.datasets.GTSRB(root="./data", split="test", download=True, transform=transform)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True, num_workers=2)
+    testset = torchvision.datasets.GTSRB(root="./data", split="test", download=True, transform=test_transform)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=True, num_workers=4)
 
     return trainloader, testloader
+
+if __name__=="__main__":
+    trainloader, testloader = get_data(1)
+    print(len(testloader))
+    print(len(trainloader))
