@@ -18,14 +18,18 @@ def main():
     trainloader, testloader = get_data(batch_size=50)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    net = train(net, criterion, optimizer, trainloader, device, num_epochs=3)
-    evaluate(testloader, net, device)
+    net = train(net, criterion, optimizer, trainloader, device, testloader)
+    # evaluate(testloader, net, device)
 
-def train(net, criterion, optimizer, trainloader, device, num_epochs):
+def train(net, criterion, optimizer, trainloader, device, testloader):
     # use CUDA, if available
     net.to(device)
+    keep_training = True
+    acc = 0
+    last_acc = 0
+    epoch = 0
 
-    for epoch in range(num_epochs):  # loop over the dataset multiple times
+    while keep_training:  # loop over the dataset multiple times
 
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
@@ -46,6 +50,13 @@ def train(net, criterion, optimizer, trainloader, device, num_epochs):
             if i % 100 == 0:    # print every 100 batches
                 print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 50:.3f}')
                 running_loss = 0.0
+        
+        # evaluate training accuracy and decide whether to stop
+        acc = evaluate(testloader, net, device)
+        if (acc < last_acc):
+            keep_training = False
+        epoch += 1
+        last_acc = acc
 
     print('Finished Training')
     return net
@@ -66,6 +77,7 @@ def evaluate(testloader, net, device):
             correct += (predicted == labels).sum().item()
 
     print(f'Accuracy of the network on the test images: {100 * correct // total} %')
+    return (100 * correct / total)
 
 if __name__=="__main__":
     main()
