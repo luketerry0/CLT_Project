@@ -31,10 +31,10 @@ class Net(nn.Module):
     def forward(self, x):
         return self.layers(x)
 
-def get_model():
+def get_model(learning_rate):
     # define the criteria for training the neural net
     net = Net()
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr=0.001)
+    optimizer = optim.Adam(net.parameters(), lr=learning_rate)
 
     return net, criterion, optimizer

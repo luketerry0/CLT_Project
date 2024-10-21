@@ -12,16 +12,16 @@ from model import get_model
 Classifier training and verification
 """
 
-def main():
+def main(transform_indices, batch_size, learning_rate):
     # pull in data and model from other files
-    net, criterion, optimizer = get_model()
-    trainloader, testloader = get_data(batch_size=50)
+    net, criterion, optimizer = get_model(learning_rate)
+    trainloader, testloader = get_data(batch_size=batch_size,transform_indices=transform_indices)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    net = train(net, criterion, optimizer, trainloader, device, testloader)
+    net = train(net, criterion, optimizer, trainloader, device, testloader, transform_indices, batch_size, learning_rate)
     # evaluate(testloader, net, device)
 
-def train(net, criterion, optimizer, trainloader, device, testloader):
+def train(net, criterion, optimizer, trainloader, device, testloader, transform_indices, batch_size, learning_rate):
     # use CUDA, if available
     net.to(device)
     keep_training = True
@@ -55,6 +55,14 @@ def train(net, criterion, optimizer, trainloader, device, testloader):
         acc = evaluate(testloader, net, device)
         if (acc < last_acc):
             keep_training = False
+            print(f"BEST ACCURACY: {last_acc}")
+            with open('results.csv', 'a', newline="") as file:
+                row_to_write = f'"{transform_indices}", {batch_size}, {learning_rate}, {last_acc}'
+                print(row_to_write)
+                file.write(row_to_write)
+        else:
+            torch.save(net.state_dict(), f"./{transform_indices}_{batch_size}_{learning_rate}_weights")
+
         epoch += 1
         last_acc = acc
 
@@ -80,4 +88,4 @@ def evaluate(testloader, net, device):
     return (100 * correct / total)
 
 if __name__=="__main__":
-    main()
+    main([0,1], 100, 0.001)
