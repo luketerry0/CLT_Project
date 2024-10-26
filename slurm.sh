@@ -7,7 +7,8 @@
 #SBATCH --job-name=CLT_test
 #SBATCH --output=/ourdisk/hpc/ai2es/luketerry/clt/computational_learning_theory_project/%j_0_log.out
 #SBATCH --error=/ourdisk/hpc/ai2es/luketerry/clt/computational_learning_theory_project/%j_0_log.err
-#SBATCH --time=24:00:00
+#SBATCH --partition=gpu
+#SBATCH --time=48:00:00
 #SBATCH --signal=USR2@300
 #SBATCH --open-mode=append
 #SBATCH --cpus-per-task=10

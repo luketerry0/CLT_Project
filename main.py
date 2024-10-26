@@ -57,7 +57,7 @@ def train(net, criterion, optimizer, trainloader, device, testloader, transform_
             keep_training = False
             print(f"BEST ACCURACY: {last_acc}")
             with open('results.csv', 'a', newline="") as file:
-                row_to_write = f'"{transform_indices}", {batch_size}, {learning_rate}, {last_acc}'
+                row_to_write = f'"{transform_indices}", {batch_size}, {learning_rate}, {last_acc} \n'
                 print(row_to_write)
                 file.write(row_to_write)
         else:
