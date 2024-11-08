@@ -13,18 +13,9 @@ class Net(nn.Module):
         super().__init__()
         
         self.layers = nn.Sequential(
-            nn.Conv2d(3, 6, 5),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
-            nn.Conv2d(6, 16, 5),
-            nn.ReLU(),
-            nn.MaxPool2d(2, 2),
             nn.Flatten(),
-            nn.Linear(16 * 5 * 5, 120),
-            nn.ReLU(),
-            nn.Linear(120, 84),
-            nn.ReLU(),
-            nn.Linear(84, 43)
+            nn.Linear(784, 10),
+            nn.ReLU()
         )  
 
 

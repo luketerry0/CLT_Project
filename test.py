@@ -1,12 +1,22 @@
-from itertools import combinations
+import random
 from main import main
 
+# code to test many different parameters
 choices = range(5)
-batch_sizes = [1, 10, 25, 50, 100, 150, 200, 300]
-learning_rates = [0.01, 0.001, 0.0005, 0.0001]
-for i in [1,2,3,4]:
-    transform_indices = list(combinations(choices, i))
-    for indices in transform_indices:
-        for batch_size in batch_sizes:
-            for learning_rate in learning_rates:
-                main(indices, batch_size, learning_rate)
+batch_sizes = [100, 5000]
+learning_rates_range = [0.01, 0.0001]
+values_to_choose = 30
+trials = 40
+for i in range(values_to_choose):
+    batch_size = random.randint(batch_sizes[0], batch_sizes[1])
+    learning_rate = random.uniform(learning_rates_range[0], learning_rates_range[1])
+    for trial in range(trials):
+        main(batch_size, learning_rate)
+
+# # use the same parameters for many runs in order to make a histogram
+# transformations = (1, 2, 3)
+# batch_size = 100
+# learning_rate = 0.001
+# trials = 1
+# for i in range(trials):
+#     main(transformations, batch_size, learning_rate)

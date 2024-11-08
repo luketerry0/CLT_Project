@@ -4,6 +4,7 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+import time
 
 from data import get_data
 from model import get_model
@@ -12,16 +13,16 @@ from model import get_model
 Classifier training and verification
 """
 
-def main(transform_indices, batch_size, learning_rate):
+def main(batch_size, learning_rate):
     # pull in data and model from other files
     net, criterion, optimizer = get_model(learning_rate)
-    trainloader, testloader = get_data(batch_size=batch_size,transform_indices=transform_indices)
+    trainloader, testloader = get_data(batch_size=batch_size)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-    net = train(net, criterion, optimizer, trainloader, device, testloader, transform_indices, batch_size, learning_rate)
+    net = train(net, criterion, optimizer, trainloader, device, testloader, batch_size, learning_rate)
     # evaluate(testloader, net, device)
 
-def train(net, criterion, optimizer, trainloader, device, testloader, transform_indices, batch_size, learning_rate):
+def train(net, criterion, optimizer, trainloader, device, testloader, batch_size, learning_rate):
     # use CUDA, if available
     net.to(device)
     keep_training = True
@@ -56,12 +57,16 @@ def train(net, criterion, optimizer, trainloader, device, testloader, transform_
         if (acc < last_acc):
             keep_training = False
             print(f"BEST ACCURACY: {last_acc}")
-            with open('results.csv', 'a', newline="") as file:
-                row_to_write = f'"{transform_indices}", {batch_size}, {learning_rate}, {last_acc} \n'
-                print(row_to_write)
-                file.write(row_to_write)
-        else:
-            torch.save(net.state_dict(), f"./{transform_indices}_{batch_size}_{learning_rate}_weights")
+            try:
+                with open('same_params_results.csv', 'a', newline="") as file:
+                    row_to_write = f'{batch_size}, {learning_rate}, {last_acc} \n'
+                    print(row_to_write)
+                    file.write(row_to_write)
+            except IOError:
+                # If there's an error opening the file, wait a bit and try again
+                time.sleep(1)
+        # else:
+        #     # torch.save(net.state_dict(), f"./{transform_indices}_{batch_size}_{learning_rate}_weights")
 
         epoch += 1
         last_acc = acc
@@ -88,4 +93,4 @@ def evaluate(testloader, net, device):
     return (100 * correct / total)
 
 if __name__=="__main__":
-    main([0,1], 100, 0.001)
+    main(100, 0.0001)

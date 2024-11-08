@@ -21,4 +21,4 @@ cd /ourdisk/hpc/ai2es/luketerry/clt/computational_learning_theory_project/
 # activating a version of my environment
 conda activate /home/jroth/.conda/envs/mct
 
-python test.py
+srun python test.py
